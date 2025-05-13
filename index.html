@@ -10,94 +10,169 @@
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
+            /* เปลี่ยนสีพื้นหลังเป็นสีดำ */
+            background-color: #1a202c; /* สีดำ */
+        }
+        .container {
+            /* ปรับแต่ง container ให้มี shadow และขอบมน */
+            background-color: transparent; /* เปลี่ยนเป็นโปร่งใส */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            border-radius: 0.75rem; /* ปรับขอบมน */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
+        }
+        .form-container {
+             background-color: transparent; /* เปลี่ยนเป็นโปร่งใส */
+            border-radius: 0.75rem; /* ปรับขอบมน */
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+             border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
+        }
+
+        .record-list-container {
+            background-color: transparent; /* เปลี่ยนเป็นโปร่งใส */
+            border-radius: 0.75rem; /* ปรับขอบมน */
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
+
+        }
+
+        /* ปรับแต่ง table header */
+        .table-header {
+            background-color: #2d3748; /* สีเทาเข้ม */
+        }
+        .table-header th {
+            color: #f7fafc; /* สีเทาอ่อน */
+        }
+        .text-gray-700{
+            color: #e2e8f0; /* สีเทาอ่อน */
+        }
+        .bg-green-100 {
+            background-color: #15803d; /* เปลี่ยนเป็นสีเขียวเข้ม */
+        }
+        .border-green-500{
+             border-color: #15803d; /* สีเขียวเข้ม */
+        }
+        .text-green-700{
+            color: #ffffff; /* เปลี่ยนเป็นสีขาว */
+        }
+        .bg-red-100{
+            background-color: #b91c1c; /* เปลี่ยนเป็นสีแดงเข้ม */
+        }
+        .border-red-500{
+            border-color: #b91c1c; /* สีแดงเข้ม */
+        }
+        .text-red-700{
+            color:#ffffff; /* เปลี่ยนเป็นสีขาว */
+        }
+        .bg-blue-100{
+             background-color: #0b5ba3; /* เปลี่ยนเป็นสีน้ำเงินเข้ม */
+        }
+        .border-blue-500{
+             border-color: #0b5ba3; /* สีน้ำเงินเข้ม */
+        }
+        .text-blue-700{
+            color: #ffffff; /* เปลี่ยนเป็นสีขาว */
+        }
+        .text-white{
+            color: #fff;
         }
     </style>
 </head>
-<body class="bg-gray-100 p-6 rounded-lg">
-    <div class="container mx-auto max-w-2xl bg-white shadow-md rounded-lg p-8">
-        <h1 class="text-3xl font-semibold text-center text-blue-600 mb-6">ระบบบัญชีรายรับรายจ่าย</h1>
+<body class="bg-gray-900 p-6 rounded-lg">
+    <div class="container mx-auto max-w-2xl  rounded-lg p-8">
+        <h1 class="text-3xl font-semibold text-center text-blue-400 mb-6">ระบบบัญชีรายรับรายจ่าย</h1>
 
         <div id="summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
-                <h3 class="text-md font-semibold">รายรับทั้งหมด:</h3>
-                <p id="totalIncome" class="text-xl font-bold">0</p>
+            <div class="bg-green-700 border-l-4 border-green-900 p-4 rounded-md shadow-md">
+                <h3 class="text-md font-semibold text-white">รายรับทั้งหมด:</h3>
+                <p id="totalIncome" class="text-xl font-bold text-white">0</p>
             </div>
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm">
-                <h3 class="text-md font-semibold">รายจ่ายทั้งหมด:</h3>
-                <p id="totalExpense" class="text-xl font-bold">0</p>
+            <div class="bg-red-700 border-l-4 border-red-900 p-4 rounded-md shadow-md">
+                <h3 class="text-md font-semibold text-white">รายจ่ายทั้งหมด:</h3>
+                <p id="totalExpense" class="text-xl font-bold text-white">0</p>
             </div>
-            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-sm">
-                <h3 class="text-md font-semibold">ยอดคงเหลือ:</h3>
-                <p id="balance" class="text-xl font-bold">0</p>
+            <div class="bg-blue-700 border-l-4 border-blue-900 p-4 rounded-md shadow-md">
+                <h3 class="text-md font-semibold text-white">ยอดคงเหลือ:</h3>
+                <p id="balance" class="text-xl font-bold text-white">0</p>
             </div>
         </div>
 
-        <div id="entryForm" class="bg-white rounded-lg p-6 mb-6">
-            <h2 id="formTitle" class="text-xl font-semibold text-gray-800 mb-4">เพิ่มรายการ</h2>
+        <div id="entryForm" class="form-container">
+            <h2 id="formTitle" class="text-xl font-semibold text-gray-300 mb-4">เพิ่มรายการ</h2>
             <form id="recordForm" class="space-y-4">
                 <div>
-                    <label for="date" class="block text-gray-700 text-sm font-bold mb-2">วันที่:</label>
+                    <label for="date" class="block text-gray-300 text-sm font-bold mb-2">วันที่:</label>
                     <input type="date" id="date" name="date" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                 </div>
                 <div>
-                    <label for="type" class="block text-gray-700 text-sm font-bold mb-2">ประเภท:</label>
+                    <label for="type" class="block text-gray-300 text-sm font-bold mb-2">ประเภท:</label>
                     <select id="type" name="type" required
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                         <option value="">เลือกประเภท...</option>
-                        <option value="income">รายรับ</option>
-                        <option value="expense">รายจ่าย</option>
+                        <option value="income" class="bg-gray-800 text-white">รายรับ</option>
+                        <option value="expense" class="bg-gray-800 text-white">รายจ่าย</option>
                     </select>
                 </div>
                 <div>
-                    <label for="category" class="block text-gray-700 text-sm font-bold mb-2">หมวดหมู่:</label>
-                    <input type="text" id="category" name="category" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <label for="category" class="block text-gray-300 text-sm font-bold mb-2">หมวดหมู่:</label>
+                    <select id="category" name="category" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
+                        <option value="">เลือกหมวดหมู่...</option>
+                        <option value="food" class="bg-gray-800 text-white">อาหาร</option>
+                        <option value="housing" class="bg-gray-800 text-white">ที่พักอาศัย</option>
+                        <option value="transport" class="bg-gray-800 text-white">การเดินทาง</option>
+                        <option value="entertainment" class="bg-gray-800 text-white">บันเทิง</option>
+                        <option value="shopping" class="bg-gray-800 text-white">ช้อปปิ้ง</option>
+                        <option value="salary" class="bg-gray-800 text-white">เงินเดือน</option>
+                        <option value="investment" class="bg-gray-800 text-white">การลงทุน</option>
+                         <option value="other" class="bg-gray-800 text-white">อื่นๆ</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">รายละเอียด:</label>
+                    <label for="description" class="block text-gray-300 text-sm font-bold mb-2">รายละเอียด:</label>
                     <input type="text" id="description" name="description"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                 </div>
                 <div>
-                    <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">จำนวน:</label>
+                    <label for="amount" class="block text-gray-300 text-sm font-bold mb-2">จำนวน:</label>
                     <input type="number" id="amount" name="amount" required
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                 </div>
                 <input type="hidden" id="id" name="id">
                 <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">บันทึก</button>
-                <button type="button" id="cancelBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2 hidden">ยกเลิก</button>
+                <button type="button" id="cancelBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2 hidden">ยกเลิก</button>
             </form>
         </div>
 
         <div id="filter" class="flex flex-wrap gap-4 justify-center mb-6">
             <div>
-                <label for="filterType" class="block text-gray-700 text-sm font-bold mb-2">ประเภท:</label>
-                <select id="filterType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <label for="filterType" class="block text-gray-300 text-sm font-bold mb-2">ประเภท:</label>
+                <select id="filterType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                     <option value="">ทั้งหมด</option>
-                    <option value="income">รายรับ</option>
-                    <option value="expense">รายจ่าย</option>
+                    <option value="income" class="bg-gray-800 text-white">รายรับ</option>
+                    <option value="expense" class="bg-gray-800 text-white">รายจ่าย</option>
                 </select>
             </div>
             <div>
-                <label for="filterYear" class="block text-gray-700 text-sm font-bold mb-2">ปี:</label>
-                <select id="filterYear" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <label for="filterYear" class="block text-gray-300 text-sm font-bold mb-2">ปี:</label>
+                <select id="filterYear" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
                     <option value="">ทั้งหมด</option>
                 </select>
             </div>
             <div>
-                <label for="search" class="block text-gray-700 text-sm font-bold mb-2">ค้นหา:</label>
-                <input type="text" id="search" placeholder="ค้นหา..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <label for="search" class="block text-gray-300 text-sm font-bold mb-2">ค้นหา:</label>
+                <input type="text" id="search" placeholder="ค้นหา..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-800 text-white border-gray-700">
             </div>
             <div class="flex items-end">
-                <button id="clearFilterBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ล้างฟิลเตอร์</button>
+                <button id="clearFilterBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ล้างฟิลเตอร์</button>
             </div>
         </div>
 
-        <div id="recordList" class="bg-white rounded-lg p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">รายการ</h2>
+        <div id="recordList" class="record-list-container">
+            <h2 class="text-xl font-semibold text-gray-300 mb-4">รายการ</h2>
             <table class="min-w-full table-auto rounded-lg hidden">
-                <thead class="bg-gray-200">
+                <thead class="table-header">
                     <tr>
                         <th class="px-4 py-2 text-left">วันที่</th>
                         <th class="px-4 py-2 text-left">ประเภท</th>
