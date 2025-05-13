@@ -6,7 +6,8 @@
     <title>ระบบบัญชีรายรับรายจ่าย</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
         body {
             font-family: 'Sarabun', sans-serif;
         }
@@ -30,8 +31,6 @@
                 <p id="balance" class="text-xl font-bold">0</p>
             </div>
         </div>
-
-        <div id="feedback" class="mt-4 p-4 rounded-md hidden"></div>
 
         <div id="entryForm" class="bg-white rounded-lg p-6 mb-6">
             <h2 id="formTitle" class="text-xl font-semibold text-gray-800 mb-4">เพิ่มรายการ</h2>
@@ -71,6 +70,30 @@
             </form>
         </div>
 
+        <div id="filter" class="flex flex-wrap gap-4 justify-center mb-6">
+            <div>
+                <label for="filterType" class="block text-gray-700 text-sm font-bold mb-2">ประเภท:</label>
+                <select id="filterType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">ทั้งหมด</option>
+                    <option value="income">รายรับ</option>
+                    <option value="expense">รายจ่าย</option>
+                </select>
+            </div>
+            <div>
+                <label for="filterYear" class="block text-gray-700 text-sm font-bold mb-2">ปี:</label>
+                <select id="filterYear" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">ทั้งหมด</option>
+                </select>
+            </div>
+            <div>
+                <label for="search" class="block text-gray-700 text-sm font-bold mb-2">ค้นหา:</label>
+                <input type="text" id="search" placeholder="ค้นหา..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="flex items-end">
+                <button id="clearFilterBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ล้างฟิลเตอร์</button>
+            </div>
+        </div>
+
         <div id="recordList" class="bg-white rounded-lg p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">รายการ</h2>
             <table class="min-w-full table-auto rounded-lg hidden">
@@ -107,11 +130,17 @@
         const totalExpenseElement = document.getElementById('totalExpense');
         const balanceElement = document.getElementById('balance');
 
-        let records = JSON.parse(localStorage.getItem('records')) || []; // โหลดข้อมูลจาก Local Storage
+        // Get filter elements
+        const filterTypeSelect = document.getElementById('filterType');
+        const filterYearSelect = document.getElementById('filterYear');
+        const searchInput = document.getElementById('search');
+        const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+        let records = JSON.parse(localStorage.getItem('records')) || [];
         let editingId = null;
 
         function showFeedback(message, type = 'success') {
-            const Toast = Swal.mixin({  // ใช้ SweetAlert
+            const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
@@ -129,13 +158,15 @@
         }
 
         function renderRecordList() {
-            if (records.length === 0) {
+            const filteredRecords = filterAndSearchRecords(records);
+
+            if (filteredRecords.length === 0) {
                 recordListTable.classList.add('hidden');
                 recordListTableBody.innerHTML = '<tr><td colspan="6" class="px-4 py-2 text-center text-gray-500">ไม่พบข้อมูล</td></tr>';
             } else {
                 recordListTable.classList.remove('hidden');
                 recordListTableBody.innerHTML = '';
-                records.forEach(record => {
+                filteredRecords.forEach(record => {
                     const row = recordListTableBody.insertRow();
                     const dateCell = row.insertCell();
                     const typeCell = row.insertCell();
@@ -165,7 +196,7 @@
                 });
             }
             calculateSummary();
-            localStorage.setItem('records', JSON.stringify(records)); // บันทึกข้อมูลลง Local Storage
+            localStorage.setItem('records', JSON.stringify(records));
         }
 
         function addRecord(event) {
@@ -228,7 +259,7 @@
         }
 
         function deleteRecord(id) {
-            Swal.fire({ // ใช้ SweetAlert
+            Swal.fire({
                 title: 'คุณแน่ใจหรือไม่?',
                 text: "คุณต้องการลบรายการนี้!",
                 icon: 'warning',
@@ -276,10 +307,51 @@
             balanceElement.textContent = balance.toLocaleString();
         }
 
+        function filterAndSearchRecords(data) {
+            const typeFilter = filterTypeSelect.value;
+            const yearFilter = filterYearSelect.value;
+            const searchTerm = searchInput.value.toLowerCase();
+
+            return data.filter(record => {
+                const typeMatch = !typeFilter || record.type === typeFilter;
+                const yearMatch = !yearFilter || new Date(record.date).getFullYear() === parseInt(yearFilter);
+                const searchMatch = !searchTerm ||
+                                    record.category.toLowerCase().includes(searchTerm) ||
+                                    record.description.toLowerCase().includes(searchTerm);
+
+                return typeMatch && yearMatch && searchMatch;
+            });
+        }
+
+        function populateYearDropdown() {
+            const years = [...new Set(records.map(record => new Date(record.date).getFullYear()))];
+             // Ensure years are sorted in descending order
+            years.sort((a, b) => b - a);
+            filterYearSelect.innerHTML = '<option value="">ทั้งหมด</option>'; // Clear existing options
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                filterYearSelect.appendChild(option);
+            });
+        }
+
+        filterTypeSelect.addEventListener('change', renderRecordList);
+        filterYearSelect.addEventListener('change', renderRecordList);
+        searchInput.addEventListener('input', renderRecordList);
+
+        clearFilterBtn.addEventListener('click', () => {
+            filterTypeSelect.value = '';
+            filterYearSelect.value = '';
+            searchInput.value = '';
+            renderRecordList();
+        });
+
         recordForm.addEventListener('submit', addRecord);
         cancelBtn.addEventListener('click', cancelEdit);
 
-        renderRecordList(); // เรียกใช้เพื่อแสดงข้อมูลเริ่มต้น
+        populateYearDropdown();
+        renderRecordList();
 
     </script>
 </body>
