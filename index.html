@@ -325,7 +325,7 @@
 
         function populateYearDropdown() {
             const years = [...new Set(records.map(record => new Date(record.date).getFullYear()))];
-             // Ensure years are sorted in descending order
+            // Ensure years are sorted in descending order
             years.sort((a, b) => b - a);
             filterYearSelect.innerHTML = '<option value="">ทั้งหมด</option>'; // Clear existing options
             years.forEach(year => {
@@ -335,6 +335,31 @@
                 filterYearSelect.appendChild(option);
             });
         }
+
+        // Add this function to ensure new records are added to the dropdown
+        function updateYearDropdown(newRecordDate) {
+            const newYear = new Date(newRecordDate).getFullYear();
+            const yearExists = Array.from(filterYearSelect.options).some(option => option.value === newYear.toString());
+
+            if (!yearExists) {
+                const newOption = document.createElement('option');
+                newOption.value = newYear;
+                newOption.textContent = newYear;
+                filterYearSelect.appendChild(newOption);
+
+                // Re-sort the options to maintain descending order
+                const options = Array.from(filterYearSelect.options);
+                options.sort((a, b) => {
+                    if (a.value === "") return -1; // Keep "ทั้งหมด" at the top
+                    if (b.value === "") return 1;
+                    return parseInt(b.value) - parseInt(a.value);
+                });
+                filterYearSelect.innerHTML = ''; // Clear the dropdown
+                options.forEach(option => filterYearSelect.appendChild(option)); // Append sorted options
+            }
+        }
+
+
 
         filterTypeSelect.addEventListener('change', renderRecordList);
         filterYearSelect.addEventListener('change', renderRecordList);
@@ -347,9 +372,15 @@
             renderRecordList();
         });
 
-        recordForm.addEventListener('submit', addRecord);
+        recordForm.addEventListener('submit', (event) => {
+            addRecord(event); // Call the addRecord function
+            const newDate = recordForm.elements.date.value;
+            updateYearDropdown(newDate); // Update the year dropdown
+        });
+
         cancelBtn.addEventListener('click', cancelEdit);
 
+        // Initial population of the year dropdown and record list
         populateYearDropdown();
         renderRecordList();
 
