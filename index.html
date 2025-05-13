@@ -19,6 +19,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
             border-radius: 0.75rem; /* ปรับขอบมน */
             border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
+            max-width: 100%; /* เปลี่ยนความกว้างสูงสุดของ container */
         }
         .form-container {
              background-color: transparent; /* เปลี่ยนเป็นโปร่งใส */
@@ -26,6 +27,7 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
              border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
+            width: 100%; /* เปลี่ยนความกว้างของ form container */
         }
 
         .record-list-container {
@@ -33,7 +35,7 @@
             border-radius: 0.75rem; /* ปรับขอบมน */
             padding: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบ */
-
+            width: 100%; /* เปลี่ยนความกว้างของ record list container */
         }
 
         /* ปรับแต่ง table header */
@@ -76,10 +78,14 @@
         .text-white{
             color: #fff;
         }
+        form {
+            width: 100%; /* ปรับความกว้างของฟอร์ม */
+            max-width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-900 p-6 rounded-lg">
-    <div class="container mx-auto max-w-2xl  rounded-lg p-8">
+    <div class="container mx-auto  rounded-lg p-8">
         <h1 class="text-3xl font-semibold text-center text-blue-400 mb-6">ระบบบัญชีรายรับรายจ่าย</h1>
 
         <div id="summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -171,7 +177,7 @@
 
         <div id="recordList" class="record-list-container">
             <h2 class="text-xl font-semibold text-gray-300 mb-4">รายการ</h2>
-            <table class="min-w-full table-auto rounded-lg hidden">
+            <table class="min-w-full table-auto rounded-lg hidden" style="width: 100%;">
                 <thead class="table-header">
                     <tr>
                         <th class="px-4 py-2 text-left">วันที่</th>
