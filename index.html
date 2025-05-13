@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบัญชีรายรับรายจ่าย</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 rounded-lg">
+    <div class="container mx-auto max-w-2xl bg-white shadow-md rounded-lg p-8">
+        <h1 class="text-3xl font-semibold text-center text-blue-600 mb-6">ระบบบัญชีรายรับรายจ่าย</h1>
+
+        <div id="summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
+                <h3 class="text-md font-semibold">รายรับทั้งหมด:</h3>
+                <p id="totalIncome" class="text-xl font-bold">0</p>
+            </div>
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm">
+                <h3 class="text-md font-semibold">รายจ่ายทั้งหมด:</h3>
+                <p id="totalExpense" class="text-xl font-bold">0</p>
+            </div>
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-sm">
+                <h3 class="text-md font-semibold">ยอดคงเหลือ:</h3>
+                <p id="balance" class="text-xl font-bold">0</p>
+            </div>
+        </div>
+
+        <div id="feedback" class="mt-4 p-4 rounded-md hidden"></div>
+
+        <div id="entryForm" class="bg-white rounded-lg p-6 mb-6">
+            <h2 id="formTitle" class="text-xl font-semibold text-gray-800 mb-4">เพิ่มรายการ</h2>
+            <form id="recordForm" class="space-y-4">
+                <div>
+                    <label for="date" class="block text-gray-700 text-sm font-bold mb-2">วันที่:</label>
+                    <input type="date" id="date" name="date" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="type" class="block text-gray-700 text-sm font-bold mb-2">ประเภท:</label>
+                    <select id="type" name="type" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">เลือกประเภท...</option>
+                        <option value="income">รายรับ</option>
+                        <option value="expense">รายจ่าย</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="category" class="block text-gray-700 text-sm font-bold mb-2">หมวดหมู่:</label>
+                    <input type="text" id="category" name="category" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">รายละเอียด:</label>
+                    <input type="text" id="description" name="description"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">จำนวน:</label>
+                    <input type="number" id="amount" name="amount" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <input type="hidden" id="id" name="id">
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">บันทึก</button>
+                <button type="button" id="cancelBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2 hidden">ยกเลิก</button>
+            </form>
+        </div>
+
+        <div id="recordList" class="bg-white rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">รายการ</h2>
+            <table class="min-w-full table-auto rounded-lg hidden">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-2 text-left">วันที่</th>
+                        <th class="px-4 py-2 text-left">ประเภท</th>
+                        <th class="px-4 py-2 text-left">หมวดหมู่</th>
+                        <th class="px-4 py-2 text-left">รายละเอียด</th>
+                        <th class="px-4 py-2 text-right">จำนวน</th>
+                        <th class="px-4 py-2"></th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    <tr>
+                        <td colspan="6" class="px-4 py-2 text-center text-gray-500">ไม่พบข้อมูล</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const recordForm = document.getElementById('recordForm');
+        const recordListTable = document.querySelector('#recordList table');
+        const recordListTableBody = document.querySelector('#recordList tbody');
+        const entryFormElement = document.getElementById('entryForm'); // Correct ID to 'entryForm'
+        const formTitle = document.getElementById('formTitle');
+        const feedback = document.getElementById('feedback');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Get summary elements
+        const totalIncomeElement = document.getElementById('totalIncome');
+        const totalExpenseElement = document.getElementById('totalExpense');
+        const balanceElement = document.getElementById('balance');
+
+        let records = [];
+        let editingId = null;
+
+        function showFeedback(message, type = 'success') {
+            feedback.textContent = message;
+            feedback.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}`;
+            feedback.classList.remove('hidden');
+            setTimeout(() => {
+                feedback.classList.add('hidden');
+            }, 3000);
+        }
+
+        function renderRecordList() {
+            if (records.length === 0) {
+                recordListTable.classList.add('hidden');
+                recordListTableBody.innerHTML = '<tr><td colspan="6" class="px-4 py-2 text-center text-gray-500">ไม่พบข้อมูล</td></tr>';
+            } else {
+                recordListTable.classList.remove('hidden');
+                recordListTableBody.innerHTML = '';
+                records.forEach(record => {
+                    const row = recordListTableBody.insertRow();
+                    const dateCell = row.insertCell();
+                    const typeCell = row.insertCell();
+                    const categoryCell = row.insertCell();
+                    const descriptionCell = row.insertCell();
+                    const amountCell = row.insertCell();
+                    const actionsCell = row.insertCell();
+
+                    dateCell.textContent = record.date;
+                    typeCell.textContent = record.type === 'income' ? 'รายรับ' : 'รายจ่าย';
+                    categoryCell.textContent = record.category;
+                    descriptionCell.textContent = record.description;
+                    amountCell.textContent = record.amount.toLocaleString();
+                    amountCell.style.textAlign = 'right';
+
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'แก้ไข';
+                    editButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs mr-1';
+                    editButton.addEventListener('click', () => editRecord(record.id));
+                    actionsCell.appendChild(editButton);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'ลบ';
+                    deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs';
+                    deleteButton.addEventListener('click', () => deleteRecord(record.id));
+                    actionsCell.appendChild(deleteButton);
+                });
+            }
+            calculateSummary(); // Update summary when records change
+        }
+
+        function addRecord(event) {
+            event.preventDefault();
+
+            const formData = new FormData(recordForm);
+            const recordData = {
+                date: formData.get('date'),
+                type: formData.get('type'),
+                category: formData.get('category'),
+                description: formData.get('description'),
+                amount: parseFloat(formData.get('amount')),
+            };
+
+            if (editingId) {
+                // แก้ไขรายการที่มีอยู่
+                const index = records.findIndex(r => r.id === editingId);
+                if (index !== -1) {
+                    records[index] = { ...records[index], ...recordData };
+                    showFeedback('แก้ไขรายการเรียบร้อยแล้ว', 'success');
+                } else {
+                    showFeedback('ไม่พบรายการที่ต้องการแก้ไข', 'error');
+                    return;
+                }
+                editingId = null;
+                formTitle.textContent = 'เพิ่มรายการ';
+                cancelBtn.classList.add('hidden');
+            } else {
+                // เพิ่มรายการใหม่
+                const newRecord = {
+                    id: Date.now(), // ใช้ timestamp เป็น ID
+                    ...recordData,
+                };
+                records.push(newRecord);
+                showFeedback('เพิ่มรายการใหม่เรียบร้อยแล้ว', 'success');
+            }
+
+            recordForm.reset();
+            renderRecordList();
+            entryFormElement.reset(); // Corrected variable name
+        }
+
+        function editRecord(id) {
+            const recordToEdit = records.find(record => record.id === id);
+            if (!recordToEdit) {
+                showFeedback('ไม่พบรายการที่ต้องการแก้ไข', 'error');
+                return;
+            }
+
+            editingId = id;
+            formTitle.textContent = 'แก้ไขรายการ';
+            cancelBtn.classList.remove('hidden');
+
+            recordForm.elements.date.value = recordToEdit.date;
+            recordForm.elements.type.value = recordToEdit.type;
+            recordForm.elements.category.value = recordToEdit.category;
+            recordForm.elements.description.value = recordToEdit.description;
+            recordForm.elements.amount.value = recordToEdit.amount;
+            recordForm.elements.id.value = id; // เก็บ ID ไว้ในฟอร์ม
+
+            // เลื่อนไปที่ฟอร์ม
+            entryFormElement.scrollIntoView({ behavior: 'smooth' }); // Corrected variable name
+        }
+
+        function deleteRecord(id) {
+            if (confirm('คุณแน่ใจว่าต้องการลบรายการนี้?')) {
+                records = records.filter(record => record.id !== id);
+                renderRecordList();
+                showFeedback('ลบรายการเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            formTitle.textContent = 'เพิ่มรายการ';
+            cancelBtn.classList.add('hidden');
+            recordForm.reset();
+        }
+
+        function calculateSummary() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            records.forEach(record => {
+                if (record.type === 'income') {
+                    totalIncome += record.amount;
+                } else if (record.type === 'expense') {
+                    totalExpense += record.amount;
+                }
+            });
+
+            const balance = totalIncome - totalExpense;
+
+            totalIncomeElement.textContent = totalIncome.toLocaleString();
+            totalExpenseElement.textContent = totalExpense.toLocaleString();
+            balanceElement.textContent = balance.toLocaleString();
+        }
+
+        recordForm.addEventListener('submit', addRecord);
+        cancelBtn.addEventListener('click', cancelEdit);
+
+        // โหลดข้อมูลเริ่มต้น (ถ้ามี)
+        const savedRecords = localStorage.getItem('records');
+        if (savedRecords) {
+            try {
+                records = JSON.parse(savedRecords);
+                renderRecordList();
+            } catch (error) {
+                console.error('Failed to parse saved records:', error);
+                showFeedback('มีปัญหาในการโหลดข้อมูลที่บันทึกไว้', 'error');
+            }
+        }
+
+        // บันทึกข้อมูลเมื่อมีการเปลี่ยนแปลง
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('records', JSON.stringify(records));
+        });
+    </script>
+</body>
+</html>
